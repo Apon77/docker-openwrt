@@ -1,10 +1,11 @@
-# Use an older Ubuntu release compatible with LEDE 17.01 toolchain dependencies
-FROM ubuntu:16.04
+# Use an older, compatible Ubuntu release because LEDE 17.01.7 
+# requires older host build tools (like older ncurses/make versions)
+FROM ubuntu:18.04
 
-# Prevent interactive prompts during installation
+# Avoid prompts during installation
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install required build dependencies for LEDE Image Builder
+# Install essential dependencies for the LEDE Image Builder
 RUN apt-get update && apt-get install -y \
     build-essential \
     libncurses5-dev \
@@ -15,22 +16,24 @@ RUN apt-get update && apt-get install -y \
     wget \
     unzip \
     python \
-    bzip2 \
-    ca-certificates \
+    python3 \
+    xsltproc \
+    zlib1g-dev \
+    libssl-dev \
     && apt-get clean
 
-# Set up a non-root user (LEDE/OpenWrt Image Builder cannot be run as root)
-RUN useradd -m lede
-USER lede
-WORKDIR /home/lede
+# Create a non-root build user (LEDE/OpenWrt prohibits building as root)
+RUN useradd -m builduser
+USER builduser
+WORKDIR /home/builduser
 
-# Download and extract the LEDE 17.01.7 Image Builder from the primary OpenWrt downloads server
+# Download and extract the LEDE 17.01.7 Image Builder for the ar71xx target
 RUN wget https://downloads.openwrt.org/releases/17.01.7/targets/ar71xx/generic/lede-imagebuilder-17.01.7-ar71xx-generic.Linux-x86_64.tar.xz \
-    && tar -xJf lede-imagebuilder-17.01.7-ar71xx-generic.Linux-x86_64.tar.xz \
+    && tar -xf lede-imagebuilder-17.01.7-ar71xx-generic.Linux-x86_64.tar.xz \
     && rm lede-imagebuilder-17.01.7-ar71xx-generic.Linux-x86_64.tar.xz
 
-# Set the working directory to the extracted Image Builder
-WORKDIR /home/lede/lede-imagebuilder-17.01.7-ar71xx-generic.Linux-x86_64
+# Set the working directory directly to the extracted image builder
+WORKDIR /home/builduser/lede-imagebuilder-17.01.7-ar71xx-generic.Linux-x86_64
 
-# Default command: prints info on how to use the Image Builder
-CMD ["make", "info"]
+# Keep the container alive or ready for interactive bash sessions
+CMD ["/bin/bash"]
