@@ -18,7 +18,7 @@ docker run -it \
 
 #inside docker image run this to get the bin in current directory.
 make image PROFILE=tl-wr740n-v4 \
-PACKAGES="luci stubby libopenssl -ip6tables -odhcp6c -kmod-ipv6 -kmod-ip6tables -odhcpd-ipv6only -ppp -ppp-mod-pppoe -kmod-ppp -kmod-pppoe" \
+PACKAGES="luci -ip6tables -odhcp6c -kmod-ipv6 -kmod-ip6tables -odhcpd-ipv6only -ppp -ppp-mod-pppoe -kmod-ppp -kmod-pppoe" \
 BIN_DIR="/home/builduser/output/" \
 FILES="files"
 
