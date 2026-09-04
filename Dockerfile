@@ -37,3 +37,4 @@ WORKDIR /home/builduser/lede-imagebuilder-17.01.7-ar71xx-generic.Linux-x86_64
 
 # Keep the container alive or ready for interactive bash sessions
 CMD ["/bin/bash"]
+
